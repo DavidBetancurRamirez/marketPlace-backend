@@ -17,6 +17,7 @@ describe("UserService", () => {
     name: "test",
     email: "test@test.com",
     password: "password",
+    cart: null,
     roles: [Role.USER],
     deletedAt: null,
   }
@@ -206,6 +207,7 @@ describe("UserService", () => {
         id: 1,
         name: "test",
         email: "test@test.com",
+        cart: null,
         roles: [Role.USER],
       }
 

@@ -42,6 +42,7 @@ describe('TokenService', () => {
         id: 1,
         name: "test",
         email: "test@test.com",
+        cart: null,
         roles: [Role.USER],
       }
       const accessToken = 'accessToken';

@@ -3,6 +3,11 @@ import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
+import { PhotosModule } from './photos/photos.module';
+import { ModelsModule } from './models/models.module';
+import { EventsModule } from './events/events.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -30,6 +35,11 @@ import { AuthModule } from './auth/auth.module';
     }),
     AuthModule,
     UserModule,
+    ProductsModule,
+    PhotosModule,
+    ModelsModule,
+    EventsModule,
+    CartModule,
   ],
   controllers: [],
   providers: [],
