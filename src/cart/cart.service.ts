@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
 import { Cart } from './entities/cart.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateItemDto } from './dto/update-cart.dto';
-import { CartItem } from './entities/cart-item.entity';
-import { UserActiveInterface } from '../common/interfaces/user.interface';
 import { User } from '../user/entities/user.entity';
-import { ItemType } from './entities/item-type.entity';
+import { UpdateItemDto } from './dto/update-cart.dto';
+import { CartItemService } from './cart-item.service';
+import { CleareCartDto } from './dto/cleare-cart.dto';
 import { CartResponse } from './interfaces/cart-response.interface';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UserActiveInterface } from '../common/interfaces/user.interface';
 
 @Injectable()
 export class CartService {
@@ -15,21 +15,16 @@ export class CartService {
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>,
 
-    @InjectRepository(CartItem)
-    private readonly cartItemRepository: Repository<CartItem>,
-
-    @InjectRepository(ItemType)
-    private readonly itemTypeRepository: Repository<ItemType>,
+    private readonly cartItemService: CartItemService,
   ) {}
 
-  async create(user: User) {
+  async create(user: User): Promise<Cart> {
     return await this.cartRepository.save({ 
       user,
-      items: []
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Cart[]> {
     return await this.cartRepository.find({
       order: {
         id: 'ASC'
@@ -37,40 +32,33 @@ export class CartService {
     });
   }
 
-  async findMyCart(email: string) {
-    return await this.cartRepository.find({
-      where: { 
-        user: { email } 
-      },
+  async findMyCart(email: string): Promise<CartResponse> {
+    const cart = await this.cartRepository.findOne({
+      where: { user: { email } },
     });
+    if (!cart) {
+      throw new BadRequestException('Cart not found');
+    }
+    return this.toCartResponse(cart);
   }
 
-  async findOne(id: number) {
-    return await this.cartRepository.find({
-      where: { id },
-    });
-  }
-
-  async addItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
+  async updateItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto): Promise<CartResponse> {
     const cart = await this.findMyCart(userActive.email);
 
-    console.log(cart)
-    return cart;
+    await this.cartItemService.update(cart, updateItemDto);
+
+    return await this.findMyCart(userActive.email);
   }
 
-  async updateItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
-    return `This action updates a cart`;
+  async clearCart(userActive: UserActiveInterface): Promise<CleareCartDto> {
+    const cart = await this.findMyCart(userActive.email);
+
+    cart.items?.forEach(async (item) => await this.cartItemService.remove(item.id));
+
+    return { message: 'Cart cleared' };
   }
 
-  async clearCart(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
-    return `This action updates a cart`;
-  }
-  
-  async removeItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
-    return `This action updates a cart`;
-  }
-
-  tocartResponse(cart: Cart): CartResponse {
+  toCartResponse(cart: Cart): CartResponse {
     delete cart["deletedAt"];
     
     return cart;

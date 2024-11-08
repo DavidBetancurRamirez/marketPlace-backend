@@ -7,18 +7,18 @@ export class CartItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Cart, cart => cart.items, { nullable: false, onDelete: 'CASCADE' })
-  cart: Cart;
-
-  @ManyToOne(() => ItemType, (itemType) => itemType.cartItems)
-  @JoinColumn()
-  itemType: ItemType;
-
   @Column()
   itemId: number;
 
   @Column()
   quantity: number;
+
+  @ManyToOne(() => ItemType, (itemType) => itemType.cartItems, { eager: true })
+  @JoinColumn()
+  itemType: ItemType;
+
+  @ManyToOne(() => Cart, cart => cart.items, { nullable: false, onDelete: 'CASCADE' })
+  cart: Cart;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   last_update: Date;
