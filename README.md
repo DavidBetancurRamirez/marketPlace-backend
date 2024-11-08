@@ -65,6 +65,20 @@ npm run dev
 - **Patch** *(/user/:id) UpdateUser:* Actualizar un usuario
 - **Delete** *(/user/:id) RemoveUser:* Eliminar un usuario
 
+---
+### Cart
+**Rutas:**
+
+*Requieren cualquier Rol*
+- **Get** *(/cart) findMyCart:* Devuelve el cart del usuario que hace la petición
+- **Patch** *(/cart) updateItem:* Agrega o actualiza items del cart
+- **Delete** *(/cart) clearCart:* Elimina todos los items del cart
+
+*Requieren Rol admin*
+- **Get** *(/cart/all) findAll:* Devuelve todos los carts
+- **Get** *(/cart/item-type) findItemsTypes:* Devuelve todos los tipos de items que se pueden agregar al cart; *"products" | "photo"*
+- **Post** *(/cart/item-type) addItemType:* Crea un tipo de item. **Necesario que se haga al inicio**
+
 
 ## Info util
 ### Crear nuevo proyecto basado en esta plantilla

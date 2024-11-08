@@ -1,24 +1,25 @@
-import { Entity, Column, ManyToOne, CreateDateColumn, PrimaryColumn } from 'typeorm';
 import { Cart } from './cart.entity';
-import { ItemType } from '../types/item-type.type';
+import { ItemType } from './item-type.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class CartItem {
-  @PrimaryColumn()
-  cartId: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @PrimaryColumn()
+  @Column()
   itemId: number;
 
   @Column()
+  quantity: number;
+
+  @ManyToOne(() => ItemType, (itemType) => itemType.cartItems, { eager: true })
+  @JoinColumn()
   itemType: ItemType;
 
   @ManyToOne(() => Cart, cart => cart.items, { nullable: false, onDelete: 'CASCADE' })
   cart: Cart;
 
-  @Column({ type: 'int', default: 1 })
-  quantity: number;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  addedAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  last_update: Date;
 }

@@ -8,12 +8,15 @@ import { TokenService } from '../auth/token.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { UpdateUserDto, UpdateMeDto } from './dto/update-user.dto';
+import { CartService } from '../cart/cart.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    private readonly cartService: CartService,
     private readonly tokenService: TokenService
   ) {}
 
@@ -23,6 +26,8 @@ export class UserService {
     createUserDto.password = await this.hashPassword(createUserDto.password);
 
     const userSaved = await this.userRepository.save(createUserDto);
+    this.cartService.create(userSaved);
+
     return this.toUserResponse(userSaved);
   }
 
@@ -71,7 +76,7 @@ export class UserService {
     
     const userWithPassword = await this.userRepository.findOne({
       where: { email },
-      select: ['password', 'deletedAt'],
+      select: ['id', 'password', 'deletedAt'],
     });
     if (!userWithPassword) {
       return null;

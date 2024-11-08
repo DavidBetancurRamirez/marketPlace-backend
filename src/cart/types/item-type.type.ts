@@ -1,1 +1,3 @@
-export type ItemType = "product" | "photo";
+export type ItemTypeValues = "product" | "photo";
+
+export const ItemTypeArray = ["product", "photo"];

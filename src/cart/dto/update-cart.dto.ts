@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateCartDto } from './create-cart.dto';
+import { IsIn, IsNumber, IsString, Min } from "class-validator";
+import { ItemTypeArray, ItemTypeValues } from "../types/item-type.type";
 
-export class UpdateCartDto extends PartialType(CreateCartDto) {}
+export class UpdateItemDto {
+  @IsNumber()
+  itemId: number;
+
+  @IsString()
+  @IsIn(ItemTypeArray)
+  itemType: ItemTypeValues;
+
+  @IsNumber()
+  @Min(1)
+  quantity: number;
+}

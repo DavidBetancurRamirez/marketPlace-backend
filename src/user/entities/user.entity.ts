@@ -2,6 +2,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -22,7 +23,8 @@ export class User {
   @Column({ nullable: false, select: false })
   password: string;
 
-  @OneToOne(() => Cart, cart => cart.user)
+  @OneToOne(() => Cart, cart => cart.user, { eager: true })
+  @JoinColumn()
   cart: Cart;
 
   @Column({ type: 'simple-enum', enum: Role, default: [Role.USER], array: true })

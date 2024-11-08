@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, OneToOne, Column, DeleteDateColumn, JoinColumn } from 'typeorm';
+import { 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  OneToMany,
+  OneToOne, 
+  Column,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { CartItem } from './cart-item.entity';
 
@@ -7,19 +14,13 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, user => user.cart, { nullable: false, onDelete: 'CASCADE' })
+  @OneToMany(() => CartItem, cartItem => cartItem.cart, { cascade: true, eager: true })
   @JoinColumn()
-  user: User;
-
-  @OneToMany(() => CartItem, cartItem => cartItem.cart, { cascade: true })
   items: CartItem[];
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @OneToOne(() => User, user => user.cart, { nullable: false, onDelete: 'CASCADE' })
+  user: User;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   last_update: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', select: false })
-  deletedAt: Date;
 }
