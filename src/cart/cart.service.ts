@@ -1,26 +1,78 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
+import { Cart } from './entities/cart.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateItemDto } from './dto/update-cart.dto';
+import { CartItem } from './entities/cart-item.entity';
+import { UserActiveInterface } from '../common/interfaces/user.interface';
+import { User } from '../user/entities/user.entity';
+import { ItemType } from './entities/item-type.entity';
+import { CartResponse } from './interfaces/cart-response.interface';
 
 @Injectable()
 export class CartService {
-  create(createCartDto: CreateCartDto) {
-    return 'This action adds a new cart';
+  constructor(
+    @InjectRepository(Cart)
+    private readonly cartRepository: Repository<Cart>,
+
+    @InjectRepository(CartItem)
+    private readonly cartItemRepository: Repository<CartItem>,
+
+    @InjectRepository(ItemType)
+    private readonly itemTypeRepository: Repository<ItemType>,
+  ) {}
+
+  async create(user: User) {
+    return await this.cartRepository.save({ 
+      user,
+      items: []
+    });
   }
 
-  findAll() {
-    return `This action returns all cart`;
+  async findAll() {
+    return await this.cartRepository.find({
+      order: {
+        id: 'ASC'
+      }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cart`;
+  async findMyCart(email: string) {
+    return await this.cartRepository.find({
+      where: { 
+        user: { email } 
+      },
+    });
   }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
-    return `This action updates a #${id} cart`;
+  async findOne(id: number) {
+    return await this.cartRepository.find({
+      where: { id },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+  async addItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
+    const cart = await this.findMyCart(userActive.email);
+
+    console.log(cart)
+    return cart;
+  }
+
+  async updateItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
+    return `This action updates a cart`;
+  }
+
+  async clearCart(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
+    return `This action updates a cart`;
+  }
+  
+  async removeItem(userActive: UserActiveInterface, updateItemDto: UpdateItemDto) {
+    return `This action updates a cart`;
+  }
+
+  tocartResponse(cart: Cart): CartResponse {
+    delete cart["deletedAt"];
+    
+    return cart;
   }
 }
