@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateEventDto } from './create-event.dto';
+import { IsIn, IsNumber, IsString, Min } from "class-validator";
+// import { ItemTypeArray, ItemTypeValues } from "../types/item-type.type";
 
-export class UpdateEventDto extends PartialType(CreateEventDto) {}
+export class UpdateEventDto {
+  @IsNumber()
+  itemId: number;
+
+  @IsString()
+//   @IsIn(ItemTypeArray)
+//   itemType: ItemTypeValues;
+
+  @IsNumber()
+  @Min(1)
+  quantity: number;
+}
